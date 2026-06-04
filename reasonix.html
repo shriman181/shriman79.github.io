@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reasonix — Academic IP Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1219;
+    --surface2: #131b24;
+    --border: rgba(255,255,255,0.06);
+    --border-bright: rgba(255,255,255,0.12);
+    --amber: #e8a942;
+    --amber-dim: rgba(232,169,66,0.12);
+    --amber-glow: rgba(232,169,66,0.06);
+    --teal: #3ec9b0;
+    --teal-dim: rgba(62,201,176,0.1);
+    --white: #f0ece4;
+    --white-60: rgba(240,236,228,0.6);
+    --white-30: rgba(240,236,228,0.3);
+    --white-10: rgba(240,236,228,0.1);
+    --mono: 'DM Mono', monospace;
+    --serif: 'Cormorant Garamond', serif;
+    --sans: 'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--amber);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s ease, width 0.2s, height 0.2s, opacity 0.2s;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(232,169,66,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease, width 0.3s, height 0.3s, opacity 0.3s;
+  }
+
+  /* NOISE overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9990;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(8,12,16,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-logo .logo-mark {
+    width: 28px; height: 28px;
+    background: var(--amber);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #080c10;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--white-60);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--amber); }
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-cta:hover { background: var(--amber); color: #080c10; }
+
+  /* SECTIONS */
+  section { position: relative; }
+
+  /* ============ HERO ============ */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 48px;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232,169,66,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,169,66,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,169,66,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+    max-width: 900px;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    border: 1px solid rgba(232,169,66,0.3);
+    padding: 6px 14px;
+    border-radius: 2px;
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--amber);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .hero-h1 {
+    font-family: var(--serif);
+    font-size: clamp(3.2rem, 7vw, 6.5rem);
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    opacity: 0;
+    animation: fadeUp 0.9s 0.4s forwards;
+  }
+  .hero-h1 em {
+    font-style: italic;
+    color: var(--amber);
+  }
+  .hero-sub {
+    margin-top: 32px;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--white-60);
+    line-height: 1.7;
+    max-width: 560px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.6s forwards;
+  }
+  .hero-actions {
+    margin-top: 48px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.8s forwards;
+  }
+  .btn-primary {
+    padding: 14px 32px;
+    background: var(--amber);
+    color: #080c10;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: opacity 0.2s, transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-secondary {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white-60);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--white); }
+  .hero-stat-row {
+    margin-top: 80px;
+    display: flex;
+    gap: 60px;
+    opacity: 0;
+    animation: fadeUp 0.9s 1s forwards;
+  }
+  .hero-stat { }
+  .hero-stat-num {
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white-30);
+    margin-top: 6px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(24px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+
+  /* ============ PROBLEM ============ */
+  #problem {
+    padding: 120px 48px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  .section-h2 {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 4vw, 3.6rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--white);
+    max-width: 700px;
+  }
+  .section-h2 em { font-style: italic; color: var(--amber); }
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 64px;
+  }
+  .problem-card {
+    background: var(--surface2);
+    padding: 40px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .problem-card:hover { border-color: var(--border-bright); }
+  .problem-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .problem-card:hover::before { opacity: 1; }
+  .problem-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  .problem-title {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+  .problem-body {
+    font-size: 0.88rem;
+    color: var(--white-60);
+    line-height: 1.75;
+  }
+
+  /* ============ SOLUTION ============ */
+  #solution {
+    padding: 120px 48px;
+  }
+  .solution-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    margin-bottom: 80px;
+  }
+  .solution-body {
+    font-size: 1rem;
+    color: var(--white-60);
+    line-height: 1.8;
+    padding-top: 8px;
+  }
+  .feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 64px;
+  }
+  .feature-item {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    align-items: center;
+    gap: 32px;
+    padding: 32px 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: background 0.3s, border-color 0.3s;
+    cursor: default;
+  }
+  .feature-item:hover {
+    background: var(--surface2);
+    border-color: var(--border-bright);
+  }
+  .feature-icon {
+    width: 48px; height: 48px;
+    background: var(--amber-dim);
+    border: 1px solid rgba(232,169,66,0.2);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .feature-text { }
+  .feature-name {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .feature-desc {
+    font-size: 0.84rem;
+    color: var(--white-60);
+    line-height: 1.65;
+  }
+  .feature-tag {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--teal);
+    border: 1px solid rgba(62,201,176,0.25);
+    padding: 4px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ============ HOW IT WORKS ============ */
+  #how {
+    padding: 120px 48px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .steps-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 64px;
+  }
+  .step {
+    padding: 40px 32px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .step-num {
+    font-family: var(--serif);
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--amber-dim);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  .step-name {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+  .step-desc {
+    font-size: 0.82rem;
+    color: var(--white-60);
+    line-height: 1.7;
+  }
+  .step::after {
+    content: '→';
+    position: absolute;
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--border-bright);
+    font-size: 1.2rem;
+    z-index: 2;
+  }
+  .step:last-child::after { display: none; }
+
+  /* ============ FOUNDER ============ */
+  #founder {
+    padding: 120px 48px;
+  }
+  .founder-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .founder-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .founder-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--amber), var(--teal));
+  }
+  .founder-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--amber-dim);
+    border: 2px solid rgba(232,169,66,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--amber);
+    margin-bottom: 24px;
+  }
+  .founder-name {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .founder-role {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 24px;
+  }
+  .founder-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .founder-pill {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white-60);
+    border: 1px solid var(--border-bright);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  .founder-quote {
+    padding-top: 8px;
+  }
+  .quote-mark {
+    font-family: var(--serif);
+    font-size: 5rem;
+    color: var(--amber-dim);
+    line-height: 0.7;
+    margin-bottom: 24px;
+    display: block;
+  }
+  .quote-text {
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--white);
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+  .quote-body {
+    font-size: 0.92rem;
+    color: var(--white-60);
+    line-height: 1.85;
+  }
+
+  /* ============ MARKET ============ */
+  #market {
+    padding: 120px 48px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .market-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 64px;
+  }
+  .market-card {
+    padding: 48px 40px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .market-card:hover { border-color: rgba(62,201,176,0.3); }
+  .market-fig {
+    font-family: var(--serif);
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--teal);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .market-label {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .market-desc {
+    font-size: 0.82rem;
+    color: var(--white-60);
+    line-height: 1.7;
+  }
+
+  /* ============ CTA ============ */
+  #cta {
+    padding: 140px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  #cta::before {
+    content: '';
+    position: absolute;
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(232,169,66,0.05) 0%, transparent 65%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+  .cta-inner { position: relative; max-width: 640px; margin: 0 auto; }
+  .cta-h2 {
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 300;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .cta-h2 em { font-style: italic; color: var(--amber); }
+  .cta-sub {
+    font-size: 0.95rem;
+    color: var(--white-60);
+    line-height: 1.75;
+    margin-bottom: 48px;
+  }
+  .cta-form {
+    display: flex;
+    gap: 0;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .cta-input {
+    flex: 1;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    border-right: none;
+    color: var(--white);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    outline: none;
+    border-radius: 2px 0 0 2px;
+    transition: border-color 0.2s;
+  }
+  .cta-input::placeholder { color: var(--white-30); }
+  .cta-input:focus { border-color: var(--amber); }
+  .cta-submit {
+    padding: 14px 28px;
+    background: var(--amber);
+    color: #080c10;
+    border: none;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: none;
+    border-radius: 0 2px 2px 0;
+    transition: opacity 0.2s;
+  }
+  .cta-submit:hover { opacity: 0.88; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    padding: 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--white-30);
+    letter-spacing: -0.02em;
+  }
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--white-30);
+    letter-spacing: 0.06em;
+  }
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+  .footer-links a {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white-30);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--amber); }
+
+  /* REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    #hero, #problem, #solution, #how, #founder, #market, #cta, footer { padding-left: 24px; padding-right: 24px; }
+    .problem-grid, .steps-row, .market-grid { grid-template-columns: 1fr; }
+    .solution-intro { grid-template-columns: 1fr; gap: 32px; }
+    .founder-layout { grid-template-columns: 1fr; }
+    .feature-item { grid-template-columns: 48px 1fr; }
+    .feature-tag { display: none; }
+    footer { flex-direction: column; gap: 20px; text-align: center; }
+    .step::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">
+    <span class="logo-mark">R</span>
+    Reasonix
+  </a>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#solution">Platform</a></li>
+    <li><a href="#how">How it Works</a></li>
+    <li><a href="#founder">Founder</a></li>
+    <li><a href="#market">Market</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Request Access →</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-tag">Academic IP Intelligence</div>
+    <h1 class="hero-h1">
+      Research creates value.<br>
+      <em>Reasonix unlocks it.</em>
+    </h1>
+    <p class="hero-sub">
+      AI-powered technology transfer infrastructure for universities — from grant drafting and IP disclosure to commercialisation detection, conflict screening, and researcher matching.
+    </p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-primary">Request Early Access <span>→</span></a>
+      <a href="#solution" class="btn-secondary">See the platform <span>↓</span></a>
+    </div>
+    <div class="hero-stat-row">
+      <div class="hero-stat">
+        <div class="hero-stat-num">$billions</div>
+        <div class="hero-stat-label">in unlicensed IP left dormant annually</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">5×</div>
+        <div class="hero-stat-label">faster IP disclosure processing</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">90%</div>
+        <div class="hero-stat-label">of grant applications go unwritten</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="reveal">
+    <div class="section-label">// The Problem</div>
+    <h2 class="section-h2">Universities are sitting on<br><em>invisible goldmines</em></h2>
+  </div>
+  <div class="problem-grid reveal">
+    <div class="problem-card">
+      <div class="problem-num">01</div>
+      <div class="problem-title">IP Stays Locked in Filing Cabinets</div>
+      <p class="problem-body">Most research outputs never reach a technology transfer office. Faculty lack the time, vocabulary, and incentive to file disclosures. Innovations decay into obsolescence before anyone identifies their commercial potential.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-num">02</div>
+      <div class="problem-title">Grant Applications Collapse Under Complexity</div>
+      <p class="problem-body">Academic grant writing is a specialised skill. Understaffed offices miss deadlines, produce misaligned proposals, or simply don't apply. Funding that could catalyse translation-ready research never arrives.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-num">03</div>
+      <div class="problem-title">Conflicts of Interest Go Undetected</div>
+      <p class="problem-body">Manual conflict-of-interest reviews are slow and inconsistent. Institutional risks from undisclosed relationships — industry, equity, advisory — accumulate silently until they become compliance crises.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-num">04</div>
+      <div class="problem-title">Collaboration Potential Remains Invisible</div>
+      <p class="problem-body">Research expertise is siloed. Complementary work happening across departments and institutions rarely connects. The right collaborators for any given project are systematically hidden from view.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="solution-intro reveal">
+    <div>
+      <div class="section-label">// The Platform</div>
+      <h2 class="section-h2">One intelligent layer across your entire <em>research-to-revenue</em> pipeline</h2>
+    </div>
+    <div>
+      <p class="solution-body">
+        Reasonix plugs into university research management systems and surfaces the intelligence that TTOs, VPRs, and research offices need to act — not archive. Built for the complexity of academic IP, not simplified away from it.
+      </p>
+    </div>
+  </div>
+
+  <div class="feature-list reveal">
+    <div class="feature-item">
+      <div class="feature-icon">📄</div>
+      <div class="feature-text">
+        <div class="feature-name">Grant Application Drafting</div>
+        <div class="feature-desc">AI-assisted generation of research grant applications — NSF, NIH, Horizon, UKRI — with compliance checking, narrative alignment, and institutional tone. Draft in hours, not weeks.</div>
+      </div>
+      <div class="feature-tag">Generative AI</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🔬</div>
+      <div class="feature-text">
+        <div class="feature-name">IP Disclosure Processing</div>
+        <div class="feature-desc">Automated intake, classification, and triage of invention disclosures. Reasonix extracts key technical claims, maps prior art landscapes, and routes disclosures to the right specialist — reducing processing time from weeks to days.</div>
+      </div>
+      <div class="feature-tag">NLP + Classification</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">💡</div>
+      <div class="feature-text">
+        <div class="feature-name">Commercialisation Opportunity Detection</div>
+        <div class="feature-desc">Continuous scanning of research outputs — publications, datasets, theses, preprints — against industry signals, startup formation data, and licensing trends to surface viable commercialisation pathways before they expire.</div>
+      </div>
+      <div class="feature-tag">Signal Intelligence</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">⚖️</div>
+      <div class="feature-text">
+        <div class="feature-name">Conflict of Interest Screening</div>
+        <div class="feature-desc">Automated cross-referencing of researcher affiliations, equity holdings, advisory roles, and funding sources against institutional policy. Flags risks before submission — not after reputational damage.</div>
+      </div>
+      <div class="feature-tag">Compliance Automation</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🤝</div>
+      <div class="feature-text">
+        <div class="feature-name">Researcher Collaboration Matching</div>
+        <div class="feature-desc">Semantic mapping of research profiles, expertise vectors, and project goals to surface high-compatibility collaborators — across departments, institutions, and disciplines — ranked by complementarity, not just keyword overlap.</div>
+      </div>
+      <div class="feature-tag">Semantic Matching</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="reveal">
+    <div class="section-label">// How It Works</div>
+    <h2 class="section-h2">From research output to<br><em>revenue in motion</em></h2>
+  </div>
+  <div class="steps-row reveal">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-name">Connect</div>
+      <p class="step-desc">Integrate with your existing research management system, institutional repository, or HR data via API. No migration required.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-name">Ingest</div>
+      <p class="step-desc">Reasonix ingests publications, disclosures, grant history, and researcher profiles. Our models build a living map of your institution's IP landscape.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-name">Analyse</div>
+      <p class="step-desc">AI surfaces commercialisation signals, flags conflicts, identifies collaboration gaps, and generates draft applications — continuously, not quarterly.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-name">Act</div>
+      <p class="step-desc">TTO teams receive prioritised, actionable intelligence — not raw data dumps. Decision-makers move faster with less noise and better outcomes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section id="founder">
+  <div class="section-label reveal">// The Founder</div>
+  <div class="founder-layout reveal">
+    <div>
+      <div class="founder-card">
+        <div class="founder-avatar">RJ</div>
+        <div class="founder-name">Rishabh Jalan</div>
+        <div class="founder-role">Founder & CEO, Reasonix</div>
+        <p style="font-size:0.85rem; color:var(--white-60); line-height:1.75;">
+          Rishabh built Reasonix after witnessing first-hand the gap between world-class academic research and the commercialisation infrastructure capable of realising its value. He brings together a rare combination of technical depth and institutional understanding to transform how universities manage their most underutilised asset: knowledge.
+        </p>
+        <div class="founder-pills">
+          <span class="founder-pill">Academic IP</span>
+          <span class="founder-pill">AI/ML</span>
+          <span class="founder-pill">Tech Transfer</span>
+          <span class="founder-pill">Research Policy</span>
+        </div>
+      </div>
+    </div>
+    <div class="founder-quote">
+      <span class="quote-mark">"</span>
+      <p class="quote-text">The best research in the world is happening inside universities. Most of it dies there — not from lack of quality, but from lack of infrastructure.</p>
+      <p class="quote-body">
+        Every technology transfer office I've spoken to is overwhelmed — understaffed, under-resourced, and working with tools built for a different era. They're brilliant people buried in process. Reasonix exists to give them leverage.
+        <br><br>
+        We're not building a reporting dashboard or another document manager. We're building the intelligence layer that makes the difference between an invention disclosure that becomes a patent and one that becomes a footnote. Between a grant application submitted on time and a funding cycle missed.
+        <br><br>
+        Universities created the internet, GPS, the touchscreen, and mRNA vaccines. Imagine what they leave behind.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET -->
+<section id="market">
+  <div class="reveal">
+    <div class="section-label">// Market Opportunity</div>
+    <h2 class="section-h2">The global research economy<br><em>needs a new operating system</em></h2>
+  </div>
+  <div class="market-grid reveal">
+    <div class="market-card">
+      <div class="market-fig">$2.1T</div>
+      <div class="market-label">Global R&D Expenditure</div>
+      <p class="market-desc">Higher education institutions account for a significant share of the world's $2.1 trillion in annual R&D — yet monetisation infrastructure has not kept pace with research scale.</p>
+    </div>
+    <div class="market-card">
+      <div class="market-fig">4,500+</div>
+      <div class="market-label">Research Universities Worldwide</div>
+      <p class="market-desc">Each institution operates a technology transfer function — most of them chronically understaffed and process-constrained. Reasonix addresses a universal, underserved need.</p>
+    </div>
+    <div class="market-card">
+      <div class="market-fig">~3%</div>
+      <div class="market-label">IP Commercialisation Rate</div>
+      <p class="market-desc">Industry estimates suggest fewer than 3% of academic inventions reach commercial licensing. Reasonix targets the 97% left behind — and the institutional value embedded in it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-inner reveal">
+    <div class="section-label" style="text-align:center;">// Early Access</div>
+    <h2 class="cta-h2">Ready to unlock your institution's <em>hidden IP</em>?</h2>
+    <p class="cta-sub">We're onboarding a select group of university technology transfer offices for early access. Join the waitlist and be among the first to experience Reasonix.</p>
+    <div class="cta-form">
+      <input type="email" class="cta-input" placeholder="your.office@university.edu">
+      <button class="cta-submit">Request Access</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Reasonix</div>
+  <div class="footer-copy">© 2025 Reasonix. All rights reserved.</div>
+  <ul class="footer-links">
+    <li><a href="#problem">Platform</a></li>
+    <li><a href="#founder">Founder</a></li>
+    <li><a href="mailto:hello@reasonix.ai">Contact</a></li>
+  </ul>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function animCursor(){
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  })();
+  document.querySelectorAll('a,button,.feature-item,.problem-card,.market-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '14px';
+      cursor.style.height = '14px';
+      ring.style.width = '48px';
+      ring.style.height = '48px';
+      ring.style.borderColor = 'rgba(232,169,66,0.7)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '8px';
+      cursor.style.height = '8px';
+      ring.style.width = '32px';
+      ring.style.height = '32px';
+      ring.style.borderColor = 'rgba(232,169,66,0.4)';
+    });
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => io.observe(r));
+
+  // CTA form
+  document.querySelector('.cta-submit').addEventListener('click', () => {
+    const input = document.querySelector('.cta-input');
+    if (input.value.includes('@')) {
+      input.value = '';
+      input.placeholder = '✓ You\'re on the list';
+      input.style.borderColor = 'var(--teal)';
+    }
+  });
+</script>
+</body>
+</html>
